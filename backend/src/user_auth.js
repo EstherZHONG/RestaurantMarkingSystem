@@ -28,7 +28,7 @@ user_auth.login = function(name, password, callback) {
             // return callback(null, rows[0].id);
         bcrypt.compare(password, rows[0].password, function (err, result) {
             if (result === true) {
-                return callback(null, rows[0].id);
+                return callback(null, rows[0].id, rows[0].category);
             } else {
                 var err = new Error('Wrong username or password.');
                 err.status = 401;
