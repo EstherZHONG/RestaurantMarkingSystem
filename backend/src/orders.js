@@ -14,7 +14,7 @@ orders.getUnrated = (id, category, callback) => {
     // } else {
     //     sqlquery = 'SELECT * FROM ORDERS WHERE delivererId = ? AND (rateDR IS NULL OR rateDC IS NULL)';
     // }
-    sqlquery = 'SELECT * FROM ORDERS WHERE clientId = ? AND rateCR IS NULL;';
+    sqlquery = 'SELECT * FROM ORDERS WHERE clientId = ? AND (rateCR IS NULL OR rateCD IS NULL);';
     connection.query(sqlquery, id, (err,rows) => {
         // if(err) throw err;
         if (err) return callback(err);
@@ -28,14 +28,14 @@ orders.getUnrated = (id, category, callback) => {
     
 }
 
-orders.rate = (orderId, rateCR, callback) => {
+orders.rate = (orderId, rateCR, rateCD, callback) => {
     let sqlquery;
-    sqlquery = 'UPDATE ORDERS SET rateCR = ? WHERE id = ?;';
+    sqlquery = 'UPDATE ORDERS SET rateCR = ?, rateCD = ? WHERE id = ?;';
     // console.log('orderId:' +orderId+ 'rateCR: '+rateCR);
     try {
 
 
-    connection.query(sqlquery, [rateCR, orderId], (err) => {
+    connection.query(sqlquery, [rateCR, rateCD, orderId], (err) => {
         // if(err) throw err;
         if (err) throw err;
         // console.log('Data received from Db:\n');
@@ -48,7 +48,6 @@ orders.rate = (orderId, rateCR, callback) => {
         return callback(null, true);
     });
     } catch (err) {
-        console.log("arrive here");
         console.log(err);
     }
 }

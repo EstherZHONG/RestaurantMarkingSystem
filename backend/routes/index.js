@@ -98,7 +98,7 @@ router.get('/unrated', (req, res) => {
 });
 
 router.post('/rate', (req, res, next) => {
-    orders.rate(req.body.orderId, req.body.rateCR, (err, succ) => {
+    orders.rate(req.body.orderId, req.body.rateCR, req.body.rateCD, (err, succ) => {
         if (err) {
             return next(err);
         } else if (!succ) {

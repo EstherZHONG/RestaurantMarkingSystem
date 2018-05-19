@@ -1,13 +1,5 @@
 import React, { Component } from 'react';
 
-// function Message(props) {
-//   const message = props.message;
-//   if (message !== '') {
-//     return(<p> {message} </p>);
-//   }
-//   return null;
-// }
-
 class UnratedOrder extends Component {
   constructor(props) {
     super(props);
@@ -16,7 +8,10 @@ class UnratedOrder extends Component {
       clientId: props.value.clientId,
       time: props.value.orderTime,
       price: props.value.totalPrice,
-      rate: null,
+      rateCR: props.value.rateCR,
+      ratedCR: props.value.rateCR !== null,
+      rateCD: props.value.rateCD,
+      ratedCD: props.value.rateCD !== null,
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -36,7 +31,8 @@ class UnratedOrder extends Component {
         method: 'POST',
         body: JSON.stringify({
           orderId: this.state.orderId,
-          rateCR: this.state.rate,
+          rateCR: this.state.rateCR,
+          rateCD: this.state.rateCD,
         }),
         credentials: 'include',
         headers: new Headers({
@@ -56,17 +52,39 @@ class UnratedOrder extends Component {
   }
 
   render() {
+    let RateFormCR;
+    if (this.state.ratedCR) {
+      RateFormCR = <p>Restaurant Rate: {this.state.rateCR}</p>;
+    } else {
+      RateFormCR = 
+      <form onSubmit={this.handleSubmit}>
+        <label>
+          Rate Restaurant:
+          <input type="text" name="rateCR" value={this.state.rateCR || ''} onChange={this.handleChange} />
+        </label>
+        <input type="submit" value="Submit" />
+      </form>;
+    }
+    let RateFormCD;
+    if (this.state.ratedCD) {
+      RateFormCD = <p>Deliverer Rate: {this.state.ratedCD}</p>;
+    } else {
+      RateFormCD = 
+      <form onSubmit={this.handleSubmit}>
+        <label>
+          Rate Deliverer:
+          <input type="text" name="rateCD" value={this.state.rateCD || ''} onChange={this.handleChange} />
+        </label>
+
+        <input type="submit" value="Submit" />
+      </form>;
+    }
     return (
       <div>
         <p>Order time: {this.state.time}</p>
         <p>Total price: £{this.state.price}</p>
-        <form onSubmit={this.handleSubmit}>
-          <label>
-            Rate:
-            <input type="text" name="rate" value={this.state.rate || ''} onChange={this.handleChange} />
-          </label>
-          <input type="submit" value="Submit" />
-        </form>
+        {RateFormCR}
+        {RateFormCD}
       </div>
     );
   }

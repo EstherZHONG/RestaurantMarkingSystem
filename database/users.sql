@@ -24,7 +24,7 @@ CREATE TABLE ORDERS (
     orderTime DATETIME NOT NULL,
     totalPrice DECIMAL(10,2) NOT NULL,
     rateCR INT DEFAULT NULL,
-    -- rateCD INT DEFAULT NULL,
+    rateCD INT DEFAULT NULL,
     -- rateDR INT DEFAULT NULL,
     -- rateDC INT DEFAULT NULL,
     -- rateRC INT DEFAULT NULL,
