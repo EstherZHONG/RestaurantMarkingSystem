@@ -82,7 +82,10 @@ class App extends Component {
   }
 
   async handleLogout() {
-    await fetch('/logout');
+    await fetch('/logout', {
+        method: 'GET',
+        credentials: 'include',
+      });
     this.setState({
       id: '',
       category: '',

@@ -1,5 +1,6 @@
 const express = require('express');
 const user_auth = require('./../src/user_auth');
+const orders = require ('./../src/orders');
 const router = express.Router();
 
 // const bodyParser = require('body-parser');
@@ -24,7 +25,7 @@ router.post('/login', (req, res, next) => {
             return next(err);
             // res.status(err.number).json({'message': err.message}).end();
         } else if (!id) {
-            res.setHeader('Access-Control-Allow-Credentials', 'true');
+            // res.setHeader('Access-Control-Allow-Credentials', 'true');
             res.status(400).json({'message': 'Wrong username or password.'}).end();
             // const err = new Error('Wrong username or password.');
             // err.status = 400;
@@ -34,21 +35,22 @@ router.post('/login', (req, res, next) => {
             req.session.category = category;
             // console.log(req.session.id);
             // console.log(req.session.userId);
-            res.setHeader('Access-Control-Allow-Credentials', 'true');
+            // res.setHeader('Access-Control-Allow-Credentials', 'true');
             res.status(200).json({'id': id, 'category': category}).end();
         }
     });
 });
 
 router.get('/user', (req, res) => {
+    // console.log(req.session);
     // console.log(req.session.id);
     // console.log(req.session.userId);
 
     if (req.session.userId) {
-        res.setHeader('Access-Control-Allow-Credentials', 'true');
+        // res.setHeader('Access-Control-Allow-Credentials', 'true');
         res.status(200).json({'id': req.session.userId, 'category': req.session.category}).end();
     } else {
-        res.setHeader('Access-Control-Allow-Credentials', 'true');
+        // res.setHeader('Access-Control-Allow-Credentials', 'true');
         res.status(401).json({'message': 'User not logged in.'}).end();
         // const err = new Error('User not logged in.');
         // err.status = 401;
@@ -61,19 +63,32 @@ router.get('/user', (req, res) => {
 router.get('/logout', (req, res, next) => {
     // if (req.session.userId) {
     req.session.destroy(function (err) {
-        if (err) {
-            // res.status(err.number).json({'message': err.message}).end();
-            return next(err);
-        } else {
-            // return res.redirect('/');
-            res.status(204).end();
-        }
+        // if (err) {
+        //     // res.status(err.number).json({'message': err.message}).end();
+        //     return next(err);
+        // } else {
+        //     // return res.redirect('/');
+        //     res.status(204).end();
+        // }
+        console.log(err);
     });
+    // console.log(req.session.id);
+    // req.sessi on = null;
+    // console.log(req.session);
+    res.status(204).end();
     // } else {
     //     const err = new Error('User hasn\'t logged-in');
     //     err.status = 401;
     //     return next(err);
     // }
+});
+
+router.get('/unrated', (req, res) => {
+    if (!req.session.userId) {
+        res.status(401).json({'message': 'User not logged in.'}).end();
+    } else if (req.session.category == 'CLIENT') {
+
+    }
 });
 
 module.exports = router;
