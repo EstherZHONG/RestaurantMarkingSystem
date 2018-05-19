@@ -10,9 +10,12 @@ import UnratedOrder from './UnratedOrder';
 // }
 
 function OrderList(props) {
+  if (props.orders.length === 0) {
+    return (<p>No unrated order</p>);
+  }
   const OrderList = props.orders.map((order) =>
     // Correct! Key should be specified inside the array.
-    <UnratedOrder key={order.id.toString()} value={order} />
+    <UnratedOrder key={order.id.toString()} value={order} onRedirect={(id, category, page) => props.onRedirect(id, category, page)} />
 
   );
   return (
@@ -30,6 +33,7 @@ class Unrated extends Component {
       category: '',
       orders: [],
     };
+    this.handleRedirect = this.handleRedirect.bind(this);
 
   }
   async componentDidMount() {
@@ -62,11 +66,15 @@ class Unrated extends Component {
     }
   }
 
+  handleRedirect(id, category, page) {
+    this.props.onRedirect(id, category, page);
+  }
+
   render() {
     return (
       <div>
         <p>Orders: </p>
-        <OrderList orders={this.state.orders} />
+        <OrderList orders={this.state.orders} onRedirect={(id, category, page) => this.handleRedirect(id, category, page)} />
       </div>
     );
   }

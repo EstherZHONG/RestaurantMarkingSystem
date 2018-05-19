@@ -97,4 +97,15 @@ router.get('/unrated', (req, res) => {
     }
 });
 
+router.post('/rate', (req, res, next) => {
+    orders.rate(req.body.orderId, req.body.rateCR, (err, succ) => {
+        if (err) {
+            return next(err);
+        } else if (!succ) {
+            res.status(400).json({'message': 'Unknown err'}).end();
+        } else {
+            res.status(204).end();
+        }
+    });
+});
 module.exports = router;

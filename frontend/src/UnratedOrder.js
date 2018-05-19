@@ -30,33 +30,29 @@ class UnratedOrder extends Component {
   }
 
   async handleSubmit(event) {
-  //   event.preventDefault();
-  //   try {
-  //     const response = await fetch('/login', {
-  //       method: 'POST',
-  //       body: JSON.stringify({
-  //         name: this.state.username,
-  //         password: this.state.password,
-  //       }),
-  //       credentials: 'include',
-  //       headers: new Headers({
-  //         'Content-Type': 'application/json',
-  //       })
-  //     });
-  //     if (response.status === 200) {
-  //       const body = await response.json();
-  //       this.props.onLogin(body.id, body.category, 'index');
-  //     } else if (response.status === 400) {
-  //       const body = await response.json();
-  //       this.setState({
-  //         username: '',
-  //         password: '',
-  //         message: body.message,
-  //       });
-  //     }
-  //   } catch(err) {
-  //     console.log(err);
-  //   }
+    event.preventDefault();
+    try {
+      const response = await fetch('/rate', {
+        method: 'POST',
+        body: JSON.stringify({
+          orderId: this.state.orderId,
+          rateCR: this.state.rate,
+        }),
+        credentials: 'include',
+        headers: new Headers({
+          'Content-Type': 'application/json',
+        })
+      });
+      if (response.status === 204) {
+        // const body = await response.json();
+        this.props.onRedirect('', '', 'index');
+      } else if (response.status === 400) {
+        const body = await response.json();
+        alert(body.message);
+      }
+    } catch(err) {
+      console.log(err);
+    }
   }
 
   render() {
@@ -67,7 +63,7 @@ class UnratedOrder extends Component {
         <form onSubmit={this.handleSubmit}>
           <label>
             Rate:
-            <input type="text" name="rate" value={this.state.rate} onChange={this.handleChange} />
+            <input type="text" name="rate" value={this.state.rate || ''} onChange={this.handleChange} />
           </label>
           <input type="submit" value="Submit" />
         </form>
