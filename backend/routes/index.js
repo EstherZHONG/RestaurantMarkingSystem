@@ -86,8 +86,14 @@ router.get('/logout', (req, res, next) => {
 router.get('/unrated', (req, res) => {
     if (!req.session.userId) {
         res.status(401).json({'message': 'User not logged in.'}).end();
-    } else if (req.session.category == 'CLIENT') {
-
+    } else {
+        orders.getUnrated(req.session.userId, req.session.category, (err, orders) => {
+            if (err) {
+                console.log(err);
+                res.status(500).json({'message': 'Unable to fetch data'}).end();
+            }
+            res.status(200).json({'id': req.session.userId, 'category': req.session.category, 'orders': orders}).end();
+        });
     }
 });
 

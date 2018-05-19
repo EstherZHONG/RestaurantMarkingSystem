@@ -1,14 +1,8 @@
 const bcrypt = require('bcrypt');
 const mysql = require('mysql');
-const config = require('./config.json');
+const connection = require ('./connection');
 
 const user_auth = module.exports = {};
-
-const connection = mysql.createConnection(config);
-connection.connect((err) => {
-    if (err) throw err;
-    console.log('Connected!');
-});
 
 user_auth.login = (name, password, callback) => {
     connection.query('SELECT * FROM USERS WHERE name = ?', name, (err,rows) => {
