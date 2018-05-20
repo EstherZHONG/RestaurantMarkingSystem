@@ -6,7 +6,7 @@ CREATE TABLE USERS (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(256) NOT NULL,
-    category ENUM ('CLIENT', 'DELIVERER', 'ADMIN', 'RESTAURANT') NOT NULL
+    category ENUM ('CLIENT', 'RESTAURANT', 'DELIVERER', 'ADMIN') NOT NULL
 ) ENGINE=INNODB;
 
 INSERT INTO USERS (name, password, category)
@@ -19,24 +19,24 @@ VALUES ('name1', '$2b$10$9.sY6LVjcIS4sVJXF.q46eDRLrLkqyPjioHbWnpUmMdwqlf6zCjj.',
 CREATE TABLE ORDERS (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     clientId INT NOT NULL,
-    -- restaurantId INT NOT NULL,
-    -- delivererId INT NOT NULL,
+    restaurantId INT NOT NULL,
+    delivererId INT NOT NULL,
     orderTime DATETIME NOT NULL,
     totalPrice DECIMAL(10,2) NOT NULL,
     rateCR INT DEFAULT NULL,
     rateCD INT DEFAULT NULL,
-    -- rateDR INT DEFAULT NULL,
-    -- rateDC INT DEFAULT NULL,
-    -- rateRC INT DEFAULT NULL,
-    -- rateRD INT DEFAULT NULL,
+    rateDR INT DEFAULT NULL,
+    rateDC INT DEFAULT NULL,
+    rateRC INT DEFAULT NULL,
+    rateRD INT DEFAULT NULL,
     -- dishes VARBINARY(256) NOT NULL,
     FOREIGN KEY (clientId) REFERENCES USERS(id)
     -- FOREIGN KEY (restaurantId) REFERENCES USERS(id)
     -- FOREIGN KEY (delivererId) REFERENCES USERS(id)
 ) ENGINE=INNODB;
 
-INSERT INTO ORDERS (clientId, orderTime, totalPrice)
-VALUES ('1', '2018-02-03 18:56:29', 28.16),
-       ('1', '2018-03-22 17:32:49', 35.14),
-       ('5', '2018-04-02 12:28:13', 16.77),
-       ('5', '2018-04-18 18:23:53', 35.19);
+INSERT INTO ORDERS (clientId, restaurantId, delivererId, orderTime, totalPrice)
+VALUES ('1', '4', '3', '2018-02-03 18:56:29', 28.16),
+       ('1', '4', '3', '2018-03-22 17:32:49', 35.14),
+       ('5', '4', '3', '2018-04-02 12:28:13', 16.77),
+       ('5', '4', '3', '2018-04-18 18:23:53', 35.19);

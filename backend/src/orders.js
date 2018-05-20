@@ -1,6 +1,8 @@
 const bcrypt = require('bcrypt');
 const mysql = require('mysql');
 const connection = require ('./connection');
+const rates = [['', 'rateCR', 'rateCD'], ['rateRC', '', 'rateRD'], ['rateDC', 'rateDR', '']]
+const categories = ['client', 'restaurant', 'deliverer']
 
 const orders = module.exports = {};
 
@@ -14,7 +16,7 @@ orders.getUnrated = (id, category, callback) => {
     // } else {
     //     sqlquery = 'SELECT * FROM ORDERS WHERE delivererId = ? AND (rateDR IS NULL OR rateDC IS NULL)';
     // }
-    sqlquery = 'SELECT * FROM ORDERS WHERE clientId = ? AND (rateCR IS NULL OR rateCD IS NULL);';
+    sqlquery = 'SELECT id, orderTime, totalPrice, ' + rates[category][(category+1)%3] + ' AS rate0, ' + rates[category][(category+2)%3] + ' AS rate1 FROM ORDERS WHERE ' + categories[category] + 'Id = ? AND (' + rates[category][(category+1)%3] + ' IS NULL OR ' + rates[category][(category+2)%3] + ' IS NULL);';
     connection.query(sqlquery, id, (err,rows) => {
         // if(err) throw err;
         if (err) return callback(err);
@@ -28,14 +30,12 @@ orders.getUnrated = (id, category, callback) => {
     
 }
 
-orders.rate = (orderId, rateCR, rateCD, callback) => {
+orders.rate = (orderId, rater, ratee, rate, callback) => {
     let sqlquery;
-    sqlquery = 'UPDATE ORDERS SET rateCR = ?, rateCD = ? WHERE id = ?;';
     // console.log('orderId:' +orderId+ 'rateCR: '+rateCR);
     try {
-
-
-    connection.query(sqlquery, [rateCR, rateCD, orderId], (err) => {
+    sqlquery = 'UPDATE ORDERS SET ' + rates[rater][ratee] + ' = ? WHERE id = ?;';
+    connection.query(sqlquery, [rate, orderId], (err) => {
         // if(err) throw err;
         if (err) throw err;
         // console.log('Data received from Db:\n');

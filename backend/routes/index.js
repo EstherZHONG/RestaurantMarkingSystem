@@ -98,7 +98,19 @@ router.get('/unrated', (req, res) => {
 });
 
 router.post('/rate', (req, res, next) => {
-    orders.rate(req.body.orderId, req.body.rateCR, req.body.rateCD, (err, succ) => {
+    orders.rate(req.body.orderId, req.body.rater, req.body.ratee, req.body.rate, (err, succ) => {
+        if (err) {
+            return next(err);
+        } else if (!succ) {
+            res.status(400).json({'message': 'Unknown err'}).end();
+        } else {
+            res.status(204).end();
+        }
+    });
+});
+
+router.post('/rateCD', (req, res, next) => {
+    orders.rateCD(req.body.orderId, req.body.rateCD, (err, succ) => {
         if (err) {
             return next(err);
         } else if (!succ) {

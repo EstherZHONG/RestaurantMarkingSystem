@@ -14,8 +14,7 @@ function OrderList(props) {
     return (<p>No unrated order</p>);
   }
   const OrderList = props.orders.map((order) =>
-    // Correct! Key should be specified inside the array.
-    <UnratedOrder key={order.id.toString()} value={order} onRedirect={(id, category, page) => props.onRedirect(id, category, page)} />
+    <UnratedOrder key={order.id.toString()} category={props.category} value={order} onRedirect={(id, category, page) => props.onRedirect(id, category, page)} />
 
   );
   return (
@@ -74,7 +73,7 @@ class Unrated extends Component {
     return (
       <div>
         <p>Orders: </p>
-        <OrderList orders={this.state.orders} onRedirect={(id, category, page) => this.handleRedirect(id, category, page)} />
+        <OrderList orders={this.state.orders} category={this.state.category} onRedirect={(id, category, page) => this.handleRedirect(id, category, page)} />
       </div>
     );
   }

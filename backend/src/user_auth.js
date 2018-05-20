@@ -5,7 +5,7 @@ const connection = require ('./connection');
 const user_auth = module.exports = {};
 
 user_auth.login = (name, password, callback) => {
-    connection.query('SELECT * FROM USERS WHERE name = ?', name, (err,rows) => {
+    connection.query('SELECT id, name, password, category-1 as category FROM USERS WHERE name = ?;', name, (err,rows) => {
         if(err) throw err;
         console.log('Data received from Db:\n');
         console.log(rows);
