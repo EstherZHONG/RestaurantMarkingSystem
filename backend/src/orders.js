@@ -16,7 +16,8 @@ orders.getUnrated = (id, category, callback) => {
     // } else {
     //     sqlquery = 'SELECT * FROM ORDERS WHERE delivererId = ? AND (rateDR IS NULL OR rateDC IS NULL)';
     // }
-    sqlquery = 'SELECT id, orderTime, totalPrice, ' + rates[category][(category+1)%3] + ' AS rate0, ' + rates[category][(category+2)%3] + ' AS rate1 FROM ORDERS WHERE ' + categories[category] + 'Id = ? AND (' + rates[category][(category+1)%3] + ' IS NULL OR ' + rates[category][(category+2)%3] + ' IS NULL);';
+    sqlquery = 'SELECT id, orderTime, totalPrice, ' + rates[category][(category+1)%3] + ' AS rate0, ' + rates[category][(category+2)%3] + ' AS rate1 FROM ORDERS WHERE ' + categories[category] + 'Id = ? ;';
+    // 'AND (' + rates[category][(category+1)%3] + ' IS NULL OR ' + rates[category][(category+2)%3] + ' IS NULL);';
     connection.query(sqlquery, id, (err,rows) => {
         // if(err) throw err;
         if (err) return callback(err);
