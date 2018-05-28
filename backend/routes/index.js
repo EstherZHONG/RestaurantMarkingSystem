@@ -1,14 +1,9 @@
 const express = require('express');
-const user_auth = require('./../src/user_auth');
-const orders = require ('./../src/orders');
+const userAuth = require('../src/userAuth');
+const orders = require ('../src/orders');
+const mustLogin = require('../middleware/mustLogin');
+const asyncRoute = require('../middleware/asyncRoute');
 const router = express.Router();
-
-// const bodyParser = require('body-parser');
-// const multer = require('multer');
-
-// router.use(bodyParser.json()); // for parsing application/json
-// router.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
-
 
 /* GET home page. */
 router.get('/', (req, res, next) => {
@@ -16,108 +11,50 @@ router.get('/', (req, res, next) => {
 });
 
 /* POST user login */
-router.post('/login', (req, res, next) => {
-    // console.log(req.session.id);
-    // console.log(req.body);
-    // res.send('user-login: username: ' + req.body.name + '; password: ' + req.body.password + '\n');
-    user_auth.login(req.body.name, req.body.password, (err, id, category) => {
-        if (err) {
-            return next(err);
-            // res.status(err.number).json({'message': err.message}).end();
-        } else if (!id) {
-            // res.setHeader('Access-Control-Allow-Credentials', 'true');
-            res.status(400).json({'message': 'Wrong username or password.'}).end();
-            // const err = new Error('Wrong username or password.');
-            // err.status = 400;
-            // return next(err);
-        } else {
-            req.session.userId = id;
-            req.session.category = category;
-            // console.log(req.session.id);
-            // console.log(req.session.userId);
-            // res.setHeader('Access-Control-Allow-Credentials', 'true');
-            res.status(200).json({'id': id, 'category': category}).end();
-        }
-    });
-});
-
-router.get('/user', (req, res) => {
-    // console.log(req.session);
-    // console.log(req.session.id);
-    // console.log(req.session.userId);
-
-    if (req.session.userId) {
-        // res.setHeader('Access-Control-Allow-Credentials', 'true');
-        res.status(200).json({'id': req.session.userId, 'category': req.session.category}).end();
-    } else {
-        // res.setHeader('Access-Control-Allow-Credentials', 'true');
-        res.status(401).json({'message': 'User not logged in.'}).end();
-        // const err = new Error('User not logged in.');
-        // err.status = 401;
-        // return err;
-        // res.status(401).json({'message': }).end();
+router.post('/login', asyncRoute(async (req, res, next) => {
+    try {
+        const { id, category } = await userAuth.login(req.body.name, req.body.password);
+        req.session.userId = id;
+        req.session.category = category;
+        res.status(200).json({ id, category }).end();        
+    } catch (e) {
+        // console.log(e.stack);
+        throw { message: e.message, status: 400 };
     }
+}));
+
+router.get('/user', mustLogin, (req, res) => {
+    res.status(200).json({id: req.session.userId, category: req.session.category}).end();
 });
 
 /* GET user logout */
 router.get('/logout', (req, res, next) => {
-    // if (req.session.userId) {
-    req.session.destroy(function (err) {
-        // if (err) {
-        //     // res.status(err.number).json({'message': err.message}).end();
-        //     return next(err);
-        // } else {
-        //     // return res.redirect('/');
-        //     res.status(204).end();
-        // }
-        console.log(err);
-    });
-    // console.log(req.session.id);
-    // req.sessi on = null;
-    // console.log(req.session);
+    delete req.session.userId;
+    delete req.session.category;
     res.status(204).end();
-    // } else {
-    //     const err = new Error('User hasn\'t logged-in');
-    //     err.status = 401;
-    //     return next(err);
-    // }
 });
 
-router.get('/unrated', (req, res) => {
-    if (!req.session.userId) {
-        res.status(401).json({'message': 'User not logged in.'}).end();
-    } else {
-        orders.getUnrated(req.session.userId, req.session.category, (err, orders) => {
-            if (err) {
-                console.log(err);
-                res.status(500).json({'message': 'Unable to fetch data'}).end();
-            }
-            res.status(200).json({'id': req.session.userId, 'category': req.session.category, 'orders': orders}).end();
-        });
+router.get('/unrated', mustLogin, asyncRoute(async (req, res) => {
+    try {
+        const result = await orders.getUnrated(req.session.userId, req.session.category);   
+        res.status(200).json({
+            id: req.session.userId,
+            category: req.session.category,
+            orders: result,
+        }).end();
+    } catch(e) {
+        // console.log(e.stack);
+        throw { message: 'Unable to fetch data', status: 500 };
     }
-});
+}));
 
-router.post('/rate', (req, res, next) => {
-    orders.rate(req.body.orderId, req.body.rater, req.body.ratee, req.body.rate, (err, succ) => {
-        if (err) {
-            return next(err);
-        } else if (!succ) {
-            res.status(400).json({'message': 'Unknown err'}).end();
-        } else {
-            res.status(204).end();
-        }
-    });
-});
+router.post('/rate', mustLogin, asyncRoute(async (req, res, next) => {
+    try {
+        await orders.rate(req.body.orderId, req.body.rater, req.body.ratee, req.body.rate);
+        res.status(204).end();
+    } catch(e) {
+        throw { message: e.message, status: e instanceof Error ? 500 : 400 };
+    }
+}));
 
-router.post('/rateCD', (req, res, next) => {
-    orders.rateCD(req.body.orderId, req.body.rateCD, (err, succ) => {
-        if (err) {
-            return next(err);
-        } else if (!succ) {
-            res.status(400).json({'message': 'Unknown err'}).end();
-        } else {
-            res.status(204).end();
-        }
-    });
-});
 module.exports = router;
