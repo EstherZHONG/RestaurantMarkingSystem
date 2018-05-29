@@ -34,16 +34,16 @@ router.get('/logout', (req, res, next) => {
     res.status(204).end();
 });
 
-router.get('/unrated', mustLogin, asyncRoute(async (req, res) => {
+router.post('/orders', mustLogin, asyncRoute(async (req, res, next) => {
     try {
-        const result = await orders.getUnrated(req.session.userId, req.session.category);   
+        const result = await orders.getOrders(req.session.userId, req.session.category, req.body.sort, req.body.limitHead, req.body.limitTail);   
         res.status(200).json({
             id: req.session.userId,
             category: req.session.category,
             orders: result,
         }).end();
     } catch(e) {
-        // console.log(e.stack);
+        console.log(e.stack);
         throw { message: 'Unable to fetch data', status: 500 };
     }
 }));

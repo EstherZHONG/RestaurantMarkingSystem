@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import LoginForm from './LoginForm';
-import Unrated from './Unrated';
+import Orders from './Orders';
 import logo from './logo.svg';
 import './App.css';
 
@@ -114,7 +114,7 @@ class App extends Component {
             <h1 className="App-title">Welcome to React</h1>
           </header>
           <p className="App-intro">{this.state.id}</p>
-          <Unrated onRedirect={(id, category, page) => this.handleRedirect(id, category, page)}/>
+          <Orders onRedirect={(id, category, page) => this.handleRedirect(id, category, page)}/>
           <button onClick={() => this.handleLogout()}> logout </button>
         </div>
       );

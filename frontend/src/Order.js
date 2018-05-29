@@ -10,7 +10,7 @@ function sqlToJsDateTime(dateStr) {
   return formatedDate;
 }
 
-class UnratedOrder extends Component {
+class Order extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -72,4 +72,4 @@ class UnratedOrder extends Component {
   }
 }
 
-export default UnratedOrder;
+export default Order;
